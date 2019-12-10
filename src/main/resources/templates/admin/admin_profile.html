@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>博客 | [[#{admin.user.profile.title}]]</title>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper">
+    <!-- 引入header -->
+    <div th:replace="admin/commons/_header.html"/>
+    <!-- 引入sidebar -->
+    <div th:replace="admin/commons/_sidebar.html"/>
+    <!-- 页面内容 -->
+    <div class="content-wrapper">
+        <section class="content-header" id="animated-header">
+            <h1>
+                [[#{admin.user.profile.title}]]
+                <small></small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    <a data-pjax="true" href="/admin">
+                        <i class="fa fa-dashboard"></i> [[#{admin.index.bread.index}]]</a>
+                </li>
+                <li><a data-pjax="true" href="javascript:void(0)">[[#{admin.user.profile.bread.user}]]</a></li>
+                <li class="active">[[#{admin.user.profile.title}]]</li>
+            </ol>
+        </section>
+
+        <!-- tab选项卡 -->
+        <section class="content container-fluid" id="animated-content">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a href="#general" data-toggle="tab">[[#{admin.user.profile.tab.basic}]]</a>
+                            </li>
+                            <li>
+                                <a href="#pass" data-toggle="tab">[[#{admin.user.profile.tab.password-change}]]</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="general">
+                                <form action="/admin/profile/save" method="post" class="form-horizontal" id="profileForm">
+                                    <input type="hidden" name="userId" th:value="${session.user_session.getUserId()}">
+                                    <input type="hidden" id="userPass" name="userPass" th:value="${session.user_session.getUserPass()}">
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <label for="userName" class="col-lg-2 col-sm-4 control-label">[[#{admin.user.profile.form.username}]]
+                                                <span data-toggle="tooltip" data-placement="top" th:title="#{admin.user.profile.form.username.tips}" style="cursor: pointer">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </span>
+                                            </label>
+                                            <div class="col-lg-4 col-sm-8">
+                                                <input type="text" class="form-control" id="userName" name="userName" th:value="${session.user_session.getUserName()}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="userDisplayName" class="col-lg-2 col-sm-4 control-label">[[#{admin.user.profile.form.display-name}]]
+                                                <span data-toggle="tooltip" data-placement="top" th:title="#{admin.user.profile.form.display-name.tips}" style="cursor: pointer">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </span>
+                                            </label>
+                                            <div class="col-lg-4 col-sm-8">
+                                                <input type="text" class="form-control" id="userDisplayName" name="userDisplayName" th:value="${session.user_session.getUserDisplayName()}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="userEmail" class="col-lg-2 col-sm-4 control-label">[[#{admin.user.profile.form.email}]]</label>
+                                            <div class="col-lg-4 col-sm-8">
+                                                <input type="email" class="form-control" id="userEmail" name="userEmail" th:value="${session.user_session.getUserEmail()}">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="userIcon" class="col-lg-2 col-sm-4 control-label">[[#{admin.user.profile.form.avatar}]]</label>
+                                            <div class="col-lg-4 col-sm-8">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="userIcon" name="userIcon" th:value="${session.user_session.getUserIcon()}">
+                                                    <span class="input-group-btn">
+                                                    <button class="btn btn-default btn-flat" type="button" onclick="">[[#{common.btn.choose}]]</button>
+                                                </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="userDesc" class="col-lg-2 col-sm-4 control-label">[[#{admin.user.profile.form.desc}]]
+                                                <span data-toggle="tooltip" data-placement="top" th:title="#{admin.user.profile.form.desc.tips}" style="cursor: pointer">
+                                                <i class="fa fa-question-circle" aria-hidden="true"></i>
+                                            </span>
+                                            </label>
+                                            <div class="col-lg-4 col-sm-8">
+                                                <textarea class="form-control" rows="3" id="userDesc" name="userDesc" style="resize: none">[[${session.user_session.getUserDesc()}]]</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button type="submit" class="btn btn-primary btn-sm ">[[#{common.btn.save}]]</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="tab-pane" id="pass">
+                                <form action="/admin/profile/changePass" method="post" class="form-horizontal" id="passForm">
+                                    <input type="hidden" name="userId" th:value="${session.user_session.getUserId()}">
+                                    <div class="box-body">
+                                        <div class="form-group">
+                                            <label for="beforePass" class="col-sm-2 control-label">[[#{admin.user.profile.form.old-password}]]</label>
+                                            <div class="col-sm-4">
+                                                <input type="password" class="form-control" id="beforePass" name="beforePass" autocomplete="current-password">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="newPass" class="col-sm-2 control-label">[[#{admin.user.profile.form.new-password}]]</label>
+                                            <div class="col-sm-4">
+                                                <input type="password" class="form-control" id="newPass" name="newPass" autocomplete="new-password">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="reNewPass" class="col-sm-2 control-label">[[#{admin.user.profile.form.confirm-password}]]</label>
+                                            <div class="col-sm-4">
+                                                <input type="password" class="form-control" id="reNewPass" name="reNewPass" autocomplete="new-password">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button type="button" class="btn btn-primary btn-sm " onclick="changPass()">[[#{common.btn.modify}]]</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- 引入footer -->
+    <div th:replace="admin/commons/_footer.html"/>
+<script th:inline="javascript">
+    function changPass() {
+        var beforePass = $('#beforePass').val();
+        var newPass = $('#newPass').val();
+        var reNewPass = $('#reNewPass').val();
+        var infonocomplete = [[#{common.js.info-no-complete}]]
+        var passwordnosame = [[#{admin.user.profile.form.password.no-same}]]
+
+        if(beforePass===""||newPass===""||reNewPass===""){
+            $("#pass").attr("class","tab-pane active");
+            alert(infonocomplete);
+        }
+        if(newPass!==reNewPass){
+            alert(passwordnosame);
+        }
+
+        $("#passForm").submit();
+
+    }
+</script>
+</div>
+</body>
+</html>
