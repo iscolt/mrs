@@ -1,3 +1,4 @@
+# 配置模板位置
 thymeleaf:
   prefix:
     classpath: /templates

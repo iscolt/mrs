@@ -5,23 +5,21 @@ import fun.miners.mrs.model.entity.User;
 import fun.miners.mrs.repository.FavoritesRepository;
 import fun.miners.mrs.repository.MovieRepository;
 import fun.miners.mrs.service.FavoritesService;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-class MrsApplicationTests {
+@RunWith(SpringRunner.class)
+public class MrsApplicationTests {
 
     @Autowired
     private FavoritesRepository favoritesRepository;
 
     @Autowired
     private MovieRepository movieRepository;
-
-    @Test
-    void contextLoads() {
-
-    }
 
     @Autowired
     private FavoritesService favoritesService;
