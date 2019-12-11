@@ -12,8 +12,8 @@
     <header class="main-header">
         <!-- Logo -->
         <a href="#" class="logo">
-            <span class="logo-mini"><b>is</b>Colt</span>
-            <span class="logo-lg"><b>Colt</b>ish</span>
+            <span class="logo-mini"><b>M</b>rs</span>
+            <span class="logo-lg"><b>M</b>rs</span>
         </a>
         <!-- Header Navbar: style can be found in header.less -->
         <nav class="navbar navbar-static-top">
@@ -24,7 +24,7 @@
 
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
-                    <li><a href="/" title="跳转博客页" target="_blank"><i class="fa fa-location-arrow"></i></a></li>
+                    <li><a href="/" title="跳转前台页面" target="_blank"><i class="fa fa-location-arrow"></i></a></li>
                     <!-- 信息 -->
                     <li class="dropdown messages-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -147,17 +147,17 @@
                     <!-- User Account: style can be found in dropdown.less -->
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <img src="https://blog.idler.work/images/logo.png" class="user-image" alt="User Image">
-                            <span class="hidden-xs" th:text="${session.user_session==null?'':session.user_session.userName}"></span>
+                            <img th:src="${session.user_session==null?'':session.user_session.icon}" class="user-image" alt="User Image">
+                            <span class="hidden-xs" th:text="${session.user_session==null?'':session.user_session.username}"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
                             <li class="user-header">
-                                <img th:src="${session.user_session==null?'':session.user_session.userIcon}" class="img-circle" alt="User Image">
+                                <img th:src="${session.user_session==null?'':session.user_session.icon}" class="img-circle" alt="User Image">
 
                                 <p>
                                     一个很菜的Java学习者
-                                    <small>Miners 成员</small>
+                                    <small>管理员</small>
                                 </p>
                             </li>
                             <!-- Menu Footer-->
