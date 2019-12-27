@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
 
+/**
+ * 用户数据持久层
+ */
 @CrossOrigin
 public interface UserRepository extends JpaRepository<User, Integer> {
 
@@ -17,4 +20,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
      * @return
      */
     User findByUsernameAndPassword(String username, String password);
+
+    /**
+     *
+     *
+     * @param role
+     * @return
+     */
+    List<User> findAllByRole(Integer role);
 }

@@ -25,19 +25,20 @@
                     <i class="fa fa-dashboard"></i> <span>仪表盘</span>
                 </a>
             </li>
-            <li th:class="${session.activeUri=='admin/profile'?'treeview active':'treeview'}">
+            <li th:class="${session.activeUri=='userList'?'treeview active':'treeview'}">
                 <a href="#">
                     <i class="fa fa fa-user-o"></i>
                     <span>用户管理</span>
                     <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
+                         <i class="fa fa-angle-left pull-right"></i>
+                    </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="/admin"><i class="fa fa-circle-o"></i> 所有用户</a></li>
+                    <li><a href="/admin/userList"><i class="fa fa-circle-o"></i> 所有用户</a></li>
+                    <li><a href="/admin/userAdd"><i class="fa fa-circle-o"></i> 添加用户</a></li>
                 </ul>
             </li>
-            <li class="treeview">
+            <li th:class="${session.activeUri=='movieList'?'treeview active':'treeview'}">
                 <a href="#">
                     <i class="fa fa fa-picture-o"></i>
                     <span>电影管理</span>
@@ -46,10 +47,11 @@
             </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="#"><i class="fa fa-circle-o"></i> 所有电影</a></li>
+                    <li><a href="/admin/movieList"><i class="fa fa-circle-o"></i> 所有电影</a></li>
+                    <li><a href="/admin/movieAdd"><i class="fa fa-circle-o"></i> 添加电影</a></li>
                 </ul>
             </li>
-            <li class="treeview">
+            <li th:class="${session.activeUri=='category'?'treeview active':'treeview'}">
                 <a href="#">
                     <i class="fa fa fa-book"></i>
                     <span>分类管理</span>
@@ -58,10 +60,22 @@
             </span>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="#"><i class="fa fa-circle-o"></i> 所有分类</a></li>
+                    <li><a href="/admin/category"><i class="fa fa-circle-o"></i> 电影分类</a></li>
                 </ul>
             </li>
-            <li class="treeview">
+            <li th:class="${session.activeUri=='score'?'treeview active':'treeview'}">
+                <a href="#">
+                    <i class="fa fa  fa-commenting-o"></i>
+                    <span>评分管理</span>
+                    <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="/admin/score"><i class="fa fa-circle-o"></i> 电影评分</a></li>
+                </ul>
+            </li>
+            <li th:class="${session.activeUri=='profile'?'treeview active':'treeview'}">
                 <a href="#">
                     <i class="fa fa fa-opera"></i>
                     <span>系统管理</span>
@@ -70,6 +84,7 @@
             </span>
                 </a>
                 <ul class="treeview-menu">
+                    <li><a href="/admin/profile"><i class="fa fa-circle-o"></i> 信息修改</a></li>
                     <li><a href="/swagger-ui.html" target="_blank"><i class="fa fa-circle-o"></i> API</a></li>
                 </ul>
             </li>

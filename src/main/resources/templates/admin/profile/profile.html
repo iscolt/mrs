@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>管理 | 修改信息</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{../assets/plugins/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../assets/plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/AdminLTE.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../assets/css/ionicons.min.css">
+    <link rel="stylesheet" href="../assets/css/skins/_all-skins.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="/assets/js/vue.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../assets/plugins/jquery/jquery.min.js"></script>
+    <script src="../assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/js/adminlte.js"></script>
+    <script src="../assets/plugins/toast/js/jquery.toast.min.js"></script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper" id="app">
+    <!-- 引入header -->
+    <div th:replace="admin/commons/_header.html"></div>
+    <!-- 引入sidebar -->
+    <div th:replace="admin/commons/_sidebar.html"></div>
+    <!-- 页面内容 -->
+    <div class="content-wrapper">
+
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                用户管理
+            </h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                <li class="active">修改信息</li>
+            </ol>
+        </section>
+
+        <!--    操作弹窗, 默认隐藏   -->
+        <div class="alert alert-success alert-dismissible" style="margin: 20px;" v-show="msg">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            {{msg}}
+        </div>
+        <!-- Main content -->
+        <section class="content">
+            <!-- Horizontal Form -->
+            <div class="box box-info" style="width: 68%;margin: 0 auto;">
+                <div class="box-header with-border">
+                    <h3 class="box-title">修改信息</h3>
+                    <a href="/admin/userList" class="btn btn-primary btn-xs">列表</a>
+                </div>
+                <!-- /.box-header -->
+                <!-- form start -->
+                <div class="form-horizontal">
+                    <div class="box-body">
+                        <div class="form-group" style="display: flex;justify-content: center;">
+                            <image :src="user.icon" style="width: 66px;height: 66px;border-radius: 50%"></image>
+                        </div>
+                        <div class="form-group">
+                            <label for="icon" class="col-sm-2 control-label">头像</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" disabled class="form-control" id="icon" v-model="user.icon">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="nickName" class="col-sm-2 control-label">昵称</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="nickName" v-model="user.nickname">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="userName" class="col-sm-2 control-label">用户名</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" disabled class="form-control" id="userName" v-model="user.username">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="col-sm-2 control-label">密码</label>
+
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="password" v-model="user.password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="col-sm-2 control-label">邮箱</label>
+
+                            <div class="col-sm-10">
+                                <input type="email" class="form-control" id="email" v-model="user.email">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        <button class="btn btn-default" @click="remove()">重置</button>
+                        <button class="btn btn-info pull-right" @click="addUser()">保存</button>
+                    </div>
+                    <!-- /.box-footer -->
+                </div>
+            </div>
+            <!-- /.box -->
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- 引入footer -->
+    <div th:replace="admin/commons/_footer.html"></div>
+</div>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            msg: '',
+            user:''
+        },
+        methods:{
+            /**
+             * 添加
+             * @constructor
+             */
+            addUser() {
+                let that = this
+                // console.log(that.user)
+                $.ajax({
+                    //请求方式
+                    type:'POST',
+                    //发送请求的地址
+                    url:'/api/user/update',
+                    contentType : "application/json;charsetset=UTF-8",
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    // contentType : 'application/json',
+                    //发送到服务器的数据，对象必须为key/value的格式，jquery会自动转换为字符串格式
+                    data: JSON.stringify(that.user),
+                    success:function(data){
+                        //请求成功函数内容
+                        if(data.code==200){
+                            that.getUserById()
+                            that.msg = data.msg
+                            // console.log(data)
+                        }else {
+                            that.msg = data.msg
+                        }
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '请输入相关内容!'
+                    }
+                });
+            },
+            /**
+             * 获取管理员信息
+             * @constructor
+             */
+            getUserById() {
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/user/'+1,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        that.user=data.result
+                        // console.log(data.result+that.user)
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 重置表单
+             */
+            remove() {
+                this.getUserById()
+            }
+        },
+        created:function(){
+            this.getUserById()
+        }
+    })
+</script>
+</body>
+</html>

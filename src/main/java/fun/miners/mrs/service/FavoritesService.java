@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * 收藏夹业务逻辑层
+ */
 @Service
 public class FavoritesService {
 

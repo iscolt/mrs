@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mrs | 个人中心</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{../assets/plugins/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../assets/plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/AdminLTE.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../assets/css/ionicons.min.css">
+    <link rel="stylesheet" href="../assets/css/skins/_all-skins.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/plugins/bootstrap-slider/slider.css">
+    <link rel="stylesheet" href="../assets/plugins/bootstrap-star/css/star-rating.css">
+    <script src="/assets/js/vue.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../assets/plugins/jquery/jquery.min.js"></script>
+    <script src="../assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/js/adminlte.js"></script>
+    <script src="../assets/plugins/toast/js/jquery.toast.min.js"></script>
+    <script src="../assets/plugins/bootstrap-slider/bootstrap-slider.js"></script>
+    <script src="../assets/plugins/bootstrap-star/js/star-rating.js"></script>
+</head>
+<body style="background-color: #81bfde">
+<div id="app">
+    <!-- 引入header -->
+    <div th:replace="./commons/_header.html" ></div>
+    <!-- Main content -->
+    <section class="content">
+
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div class="col-md-3">
+
+                    <!-- Profile Image -->
+                    <div class="box box-primary">
+                        <div class="box-body box-profile">
+                            <img class="profile-user-img img-responsive img-circle" :src="user.icon" alt="User profile picture">
+
+                            <h3 class="profile-username text-center">{{user.nickname}}</h3>
+
+                            <p class="text-muted text-center">{{user.username}}</p>
+
+                            <ul class="list-group list-group-unbordered">
+                                <li class="list-group-item">
+                                    <b>收藏</b> <a class="pull-right">1,322</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>发布</b> <a class="pull-right">543</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>点赞</b> <a class="pull-right">13,287</a>
+                                </li>
+                            </ul>
+
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+
+                    <!-- About Me Box -->
+                    <div class="box box-primary">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">为你推荐</h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <div v-for="m in rList">
+                                <strong><i class="fa fa-youtube-play margin-r-5"></i> <a :href="'/detail?id='+m.id">{{m.name}}</a></strong>
+
+                                <p class="text-muted">
+                                    {{m.starring}}
+                                </p>
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-9">
+                    <div class="nav-tabs-custom">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a href="#activity" data-toggle="tab">个人信息</a></li>
+                            <li><a href="#timeline" data-toggle="tab">我的收藏</a></li>
+                            <li><a href="#settings" data-toggle="tab">设置</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="active tab-pane" id="activity" style="height: 520px;">
+                                <!-- form start -->
+                                <div class="form-horizontal">
+                                    <div class="box-body">
+                                        <div class="form-group" style="display: flex;justify-content: center;">
+                                            <image :src="user.icon" style="width: 66px;height: 66px;border-radius: 50%"></image>
+                                        </div>
+                                        <div class="btn btn-default" style="display: flex;justify-content: center;width: 30%;margin-left: 35%;" >
+                                            <input type="file" style="width: 90%;margin-top: 5px" ref="myfile">
+                                            <button class="btn btn-default" @click="uploadIcon">上传</button>
+                                        </div>
+                                        <div class="form-group" style="margin-top: 20px;">
+                                            <div class="col-sm-1"></div>
+                                            <label for="icon" class="col-sm-1 control-label">头像</label>
+
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="icon" v-model="user.icon">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-1"></div>
+                                            <label for="nickName" class="col-sm-1 control-label">昵称</label>
+
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="nickName" v-model="user.nickname">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-1"></div>
+                                            <label for="userName" class="col-sm-1 control-label">用户名</label>
+
+                                            <div class="col-sm-9">
+                                                <input type="text" disabled class="form-control" id="userName" v-model="user.username">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-1"></div>
+                                            <label for="password" class="col-sm-1 control-label">密码</label>
+
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="password" v-model="user.password">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-1"></div>
+                                            <label for="password2" class="col-sm-1 control-label">请确认</label>
+
+                                            <div class="col-sm-9">
+                                                <input type="text" class="form-control" id="password2" v-model="user.password">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-sm-1"></div>
+                                            <label for="email" class="col-sm-1 control-label">邮箱</label>
+
+                                            <div class="col-sm-9">
+                                                <input type="email" class="form-control" id="email" v-model="user.email">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- /.box-body -->
+                                    <div class="box-footer">
+                                        <button class="btn btn-default" @click="getUserById(user.id)">重置</button>
+                                        <button class="btn btn-info pull-right" @click="addUser()">保存</button>
+                                    </div>
+                                    <!-- /.box-footer -->
+                                </div>
+                            </div>
+                            <!-- /.tab-pane -->
+                            <div class="tab-pane" id="timeline" >
+                                <div v-show="fList.length === 0" style="height: 720px">你还没有收藏什么电影哦~ <a href="/">[点击浏览电影]</a></div>
+                                <div v-for="m in fList" style="margin-top: 10px;padding: 25px;">
+                                    <div style="width: 100%;display: flex;flex-direction: row;justify-content: space-around;">
+                                        <div style="width: 94%">
+                                            <strong><i class="fa fa-youtube-play margin-r-5"></i> <a :href="'/detail?id='+m.movie.id">{{m.movie.name}}</a></strong>
+                                            <p class="text-muted">
+                                                {{m.movie.introduction}}
+                                            </p>
+                                        </div>
+                                        <div style="width: 5%">
+                                            <button class="btn default btn-sm" @click="deleteFav(m.id)">移除</button>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                </div>
+                            </div>
+                            <!-- /.tab-pane -->
+
+                            <div class="tab-pane" id="settings" >
+                                这里是一些设置
+                            </div>
+                            <!-- /.tab-pane -->
+                        </div>
+                        <!-- /.tab-content -->
+                    </div>
+                    <!-- /.nav-tabs-custom -->
+                </div>
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+    </section>
+    <!-- /.content -->
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            msg: '',
+            user: '',
+            rList: [], // 为用户推荐的电影列表
+            fList:[]
+        },
+        methods:{
+            uploadIcon: function(){
+                let that = this
+                let myfile = that.$refs.myfile;
+                let files = myfile.files;
+                let file = files[0];
+                var formdata = new FormData()
+                formdata.append('file', file)
+                formdata.append('submit', false);
+                $.ajax({
+                    url: "/api/user/updateIcon/"+that.user.id,
+                    data: formdata,
+                    type: "POST",
+                    dataType: "json",
+                    cache: false, //上传文件无需缓存
+                    processData: false, //用于对data参数进行序列化处理 这里必须false
+                    contentType: false, //必须
+                    success: function (data) {
+                        if (data.code == 200) {
+                            that.getUserById(data.result.id)
+                            console.log("上传完成!",data.msg);
+                        } else {
+                            console.log(data.msg);
+                        }
+                    },
+                })
+            },
+            /**
+             * 取消收藏
+             * @constructor
+             */
+            deleteFav(id) {
+                // console.log(id)
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/favorites/delete/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        // console.log(data.result+that.user)
+                        that.getFavByuId(localStorage.getItem("user"))
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 根据id查用户详细信息
+             * @constructor
+             */
+            getUserById(id) {
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/user/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        that.user=data.result
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 根据用户id查用户收藏夹
+             * @constructor
+             */
+            getFavByuId(id) {
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/favorites/user/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        that.fList=data.result
+                        // console.log(that.user)
+                        // console.log(data.result+that.user)
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 推荐
+             */
+            randTree() {
+                //this 的指向问题
+                let scope=this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/movie/rand',
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        scope.rList=data.result
+                    },
+                    error:function(jqXHR){
+                        //请求失败函数内容
+                        scope.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 注销
+             */
+            logout(){
+                // alert("确定注销吗?")
+                var sure = window.confirm("确定注销吗?")
+                if (sure) {
+                    localStorage.clear()
+                }
+            }
+        },
+        created:function(){
+            // 判断本地浏览器中用户是否存在, 存在即登陆了
+            if (!localStorage.getItem("user")){
+                location.href='/login'
+            } else {
+                this.getUserById(localStorage.getItem("user"))
+                this.getFavByuId(localStorage.getItem("user"))
+                this.randTree()
+            }
+        }
+    })
+</script>
+<script>
+    $(function () {
+        /* BOOTSTRAP SLIDER */
+        $('.slider').slider()
+    })
+    jQuery(document).ready(function () {
+        star();
+    });
+    //参数n为休眠时间，单位为毫秒:
+    function sleep(n) {
+        var start = new Date().getTime();
+        //  console.log('休眠前：' + start);
+        while (true) {
+            if (new Date().getTime() - start > n) {
+                break;
+            }
+        }
+        // console.log('休眠后：' + new Date().getTime());
+    }
+    async function star() {
+        var $inp = $('.star');
+        $inp.rating({
+            min: 0,
+            max: 10,
+            step: 0.1,
+            size: '2',
+            showClear: false,
+            starCaptions: function (val) {
+                if (val < 6) {
+                    return val;
+                } else {
+                    return val;
+                }
+            },
+            starCaptionClasses: function (val) {
+                if (val < 6) {
+                    return 'hidden';
+                } else {
+                    return 'hidden';
+                }
+            },
+            hoverOnClear: false
+        });
+    };
+
+</script>
+<style>
+    .score-yello{
+        color: #f39a0d;
+    }
+</style>
+</html>

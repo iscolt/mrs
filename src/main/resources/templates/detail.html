@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mrs | 电影详情</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{../assets/plugins/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../assets/plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/AdminLTE.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../assets/css/ionicons.min.css">
+    <link rel="stylesheet" href="../assets/css/skins/_all-skins.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/plugins/bootstrap-slider/slider.css">
+    <link rel="stylesheet" href="../assets/plugins/bootstrap-star/css/star-rating.css">
+    <script src="/assets/js/vue.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../assets/plugins/jquery/jquery.min.js"></script>
+    <script src="../assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/js/adminlte.js"></script>
+    <script src="../assets/plugins/toast/js/jquery.toast.min.js"></script>
+    <script src="../assets/plugins/bootstrap-slider/bootstrap-slider.js"></script>
+    <script src="../assets/plugins/bootstrap-star/js/star-rating.js"></script>
+</head>
+<body style="background-color: #81bfde">
+<div id="app">
+    <!-- 引入header -->
+    <div th:replace="./commons/_header.html" ></div>
+    <div>
+        <div class="movie row">
+            <div class="col-md-1"></div>
+            <div class="col-md-8">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">{{movie.name}} <font style="font-size: 2px;">{{msg}}</font></h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="form-horizontal row">
+                        <div class="box-body col-md-9" style="padding: 40px;border-right: 1px #b8c7ce solid" >
+                            <div style="display: flex;">
+                                <div class="icon" style="flex: 1;">
+                                    <image :src="movie.icon" style="width: 88%;height: auto;max-height: 100%;max-width: 100%"></image>
+                                </div>
+
+                                <div class="info" style="flex: 2">
+                                    <div class="form-group">
+                                        <label for="name" class="col-sm-2 control-label">导演: </label>
+
+                                        <div class="col-sm-10">
+                                            <span class="form-control" id="name" style="border:none">{{movie.director}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="screenwriter" class="col-sm-2 control-label">编剧: </label>
+
+                                        <div class="col-sm-10">
+                                            <span type="text" class="form-control" id="screenwriter" style="border:none">{{movie.screenwriter}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="starring" class="col-sm-2 control-label">主演: </label>
+
+                                        <div class="col-sm-10">
+                                            <span type="text" class="form-control" id="starring" style="border:none">{{movie.starring}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label">类型: </label>
+                                        <div class="col-sm-10">
+                                            <span type="text" class="form-control" id="category" style="border:none">{{category.value}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="language" class="col-sm-2 control-label" >语言: </label>
+
+                                        <div class="col-sm-10">
+                                            <span type="email" class="form-control" id="language" style="border:none">{{movie.language}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="length" class="col-sm-2 control-label">时长: </label>
+
+                                        <div class="col-sm-10">
+                                            <span type="email" class="form-control" id="length" style="border:none">{{movie.length}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="country" class="col-sm-2 control-label">制片地区: </label>
+
+                                        <div class="col-sm-10">
+                                            <span type="email" class="form-control" id="country" style="border:none">{{movie.country}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="firstTime" class="col-sm-2 control-label">上映日期: </label>
+
+                                        <div class="col-sm-10">
+                                            <span type="email" class="form-control" id="firstTime" style="border:none">{{movie.firstTime}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <br>
+                            <h4>电影评分
+                                <span v-show="isScore">
+                                    <i class="fa  fa-plus-square-o" v-show="!isFav" @click="addFav"></i>
+                                    <a href="/profile"><i style="color: red;" class="fa fa-heart" v-show="isFav"></i></a>
+                                </span></h4>
+                            <strong style="font-size: 45px;">{{movie.score}}</strong> 分
+                            ({{sCount}}人评价)<br>
+                            <input class="star" :value="score" readonly type="hidden" title=""/><br>
+                            更多的评价
+                            <hr>
+                            <div v-show="!isScore"><a href="/login">登陆评价</a></div>
+                            <div v-show="isScore" >
+                                <h4>我的评分 <label class="score-yello"> {{myScore.score}}&nbsp;</label><i class="fa fa-thumbs-o-up" @click="addScore"></i></h4><br>
+                                <input name="aa" id="myScore" v-model="myScore.score" type="hidden" title=""/><br>
+                            </div>
+                            <hr>
+                            <div v-show="isScore">
+                                <h5>友情提示</h5>
+                                <ul style="font-size: 2px">
+                                    <li><i class="fa fa-plus-square-o"></i> 加入收藏</li>
+                                    <li><i class="fa fa-thumbs-o-up"></i> 发布评价</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="box box-solid">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">剧情简介 </h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="form-horizontal " style="padding: 20px;">
+                            <p>
+                                {{movie.introduction}}
+                            </p>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                </div>
+<!-- 相关评论 -->
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">相关评论 </h3>
+                        <div class="pull-right box-tools">
+                            <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="form-horizontal " style="padding: 20px;">
+                        <p>
+                            敬请期待~
+                        </p>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+
+            </div>
+            <div class="col-md-2">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">谁在看这部电影</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div>
+                            <strong><i class="fa fa-user margin-r-5"></i> xxx名</strong>
+
+                            <p class="text-muted">
+                                刚刚 想看
+                            </p>
+                        </div>
+                        <div>
+                            <strong><i class="fa fa-user margin-r-5"></i> xxx名</strong>
+
+                            <p class="text-muted" style="display: flex;">
+                                刚刚 看过<input id="other-score" class="star" readonly value="8" type="hidden" title=""/>
+                            </p>
+                        </div>
+                        更多
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+<!--                为你推荐 -->
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">为你推荐</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div v-for="m in rList">
+                            <strong><i class="fa fa-youtube-play margin-r-5"></i> <a :href="'/detail?id='+m.id">{{m.name}}</a></strong>
+
+                            <p class="text-muted">
+                                {{m.introduction}}
+                            </p>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            rList:[],
+            movie:'',
+            uid: 0,
+            category: '',
+            myScore: '',
+            myFav: '',
+            score: 10,
+            isScore: false,
+            isFav: false,
+            msg: '',
+            sCount: 0, // 评论人数
+            user: localStorage.getItem('user')
+        },
+        methods:{
+            /**
+             * 收藏
+             * @constructor
+             */
+            addFav() {
+                let that = this
+                // console.log(that.myScore.score+that.uid+that.movie.id)
+                $.ajax({
+                    //请求方式
+                    type:'POST',
+                    //发送请求的地址
+                    url:'/api/favorites/addFav',
+                    contentType : "application/json;charsetset=UTF-8",
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    // contentType : 'application/json',
+                    //发送到服务器的数据，对象必须为key/value的格式，jquery会自动转换为字符串格式
+                    data: JSON.stringify(that.myFav),
+                    success:function(data){
+                        //请求成功函数内容
+                        if(data.code==200){
+                            that.isFav = true
+                            that.msg = data.msg
+                        }else {
+                            that.msg = data.msg
+                        }
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '请输入相关内容!'
+                    }
+                });
+            },
+            /**
+             * 根据电影id,用户id 查用户是否收藏了
+             * @constructor
+             */
+            getIsFav() {
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/favorites/isFav/'+that.uid+'/'+that.movie.id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    async: false,
+                    success:function(data){
+                        //请求成功函数内容
+                        if (data.result) {
+                            that.myFav=data.result
+                            that.isFav = true
+                        } else {
+                            that.isFav = false
+                            that.myFav = {
+                                "movie": that.movie,
+                                "user": {
+                                    "id": that.uid
+                                }
+                            }
+                        }
+                        // console.log(data.result+that.user)
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 评分empty-stars
+             * @constructor
+             */
+            addScore() {
+                let that = this
+                // console.log(that.myScore.score+that.uid+that.movie.id)
+                $.ajax({
+                    //请求方式
+                    type:'POST',
+                    //发送请求的地址
+                    url:'/api/score/addScore',
+                    contentType : "application/json;charsetset=UTF-8",
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    // contentType : 'application/json',
+                    //发送到服务器的数据，对象必须为key/value的格式，jquery会自动转换为字符串格式
+                    data: JSON.stringify(that.myScore),
+                    success:function(data){
+                        //请求成功函数内容
+                        if(data.code==200){
+                            that.msg = data.msg
+                        }else {
+                            that.msg = data.msg
+                        }
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '请输入相关内容!'
+                    }
+                });
+            },
+            /**
+             * 根据电影id,用户id 查用户评了多少分
+             * @constructor
+             */
+            getMyScore() {
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/score/myscore/'+that.uid+'/'+that.movie.id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    async: false,
+                    success:function(data){
+                        //请求成功函数内容
+                        if (data.result) {
+                            that.myScore=data.result
+                        } else {
+                            that.myScore = {
+                                "movie": that.movie,
+                                "score": 0,
+                                "user": {
+                                    "id": that.uid
+                                }
+                            }
+                        }
+                        // console.log(data.result+that.user)
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 根据id查电影详细信息
+             * @constructor
+             */
+            getMovieById(id) {
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/movie/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    async: false,
+                    success:function(data){
+                        //请求成功函数内容
+                        that.movie=data.result
+                        that.score = data.result.score
+                        that.category = data.result.category
+                        that.scoreCount(data.result)
+                        // console.log(data.result+that.user)
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 统计电影有多少人评论
+             */
+            scoreCount(movie) {
+                let that = this
+                // console.log(movie)
+                $.ajax({
+                    //请求方式
+                    type:'POST',
+                    //发送请求的地址
+                    url:'/api/score/movie/count',
+                    contentType : "application/json;charsetset=UTF-8",
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    // async: false,
+                    // contentType : 'application/json',
+                    //发送到服务器的数据，对象必须为key/value的格式，jquery会自动转换为字符串格式
+                    data: JSON.stringify(movie),
+                    success:function(data){
+                        //请求成功函数内容
+                        if(data.code==200){
+                            that.sCount = data.result
+                            // console.log(movie.sCount)
+                        }else {
+                            that.msg = data.msg
+                        }
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '系统内部错误!'
+                    }
+                });
+            },
+            /**
+             * 推荐
+             */
+            randTree() {
+                //this 的指向问题
+                let scope=this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/movie/rand',
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        scope.rList=data.result
+                    },
+                    error:function(jqXHR){
+                        //请求失败函数内容
+                        scope.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 注销
+             */
+            logout(){
+                // alert("确定注销吗?")
+                var sure = window.confirm("确定注销吗?")
+                if (sure) {
+                    localStorage.clear()
+                }
+            },
+            /**
+             * 提取url
+             */
+            parseUrl(){
+                var url=location.href;
+                var i=url.indexOf('?');
+                if(i==-1)return;
+                var querystr=url.substr(i+1);
+                var arr1=querystr.split('&');
+                var arr2=new Object();
+                for  (i in arr1){
+                    var ta=arr1[i].split('=');
+                    arr2[ta[0]]=ta[1];
+                }
+                return arr2;
+            },
+        },
+        created:function(){
+            this.randTree()
+            var v = this.parseUrl();//解析URL所有参数
+            // alert(v['id']);//就是你要的结果
+            this.getMovieById(v['id'])
+            // 判断本地浏览器中用户是否存在, 存在即登陆了
+            if (!localStorage.getItem("user")){
+                this.isScore = false
+            } else {
+                this.isScore = true
+                this.uid = localStorage.getItem("user")
+                this.getMyScore()
+                this.getIsFav()
+            }
+        }
+    })
+</script>
+<script>
+    $(function () {
+        /* BOOTSTRAP SLIDER */
+        $('.slider').slider()
+    })
+    jQuery(document).ready(function () {
+        star();
+    });
+    function star() {
+        var $inp = $('.star');
+        var $my = $('#myScore');
+        $inp.rating({
+            min: 0,
+            max: 10,
+            step: 0.1,
+            size: '2',
+            showClear: false,
+            starCaptions: function (val) {
+                if (val < 6) {
+                    return val;
+                } else {
+                    return val;
+                }
+            },
+            starCaptionClasses: function (val) {
+                if (val < 6) {
+                    return 'hidden';
+                } else {
+                    return 'hidden';
+                }
+            },
+            hoverOnClear: false
+        });
+        $my.rating({
+            min: 0,
+            max: 10,
+            step: 0.1,
+            size: 'sm',
+            showClear: false,
+            starCaptions: function (val) {
+                $("input[name='aa']")[0].dispatchEvent(new Event('input')) // jquery语法 为input添加input事件, 触发v-model
+                if (val < 6) {
+                    return val;
+                } else {
+                    return val;
+                }
+            },
+            starCaptionClasses: function (val) {
+                $("input[name='aa']")[0].dispatchEvent(new Event('input')) // jquery语法 为input添加input事件, 触发v-model
+                if (val < 6) {
+                    return 'label label-default';
+                } else{
+                    return 'label label-default';
+                }
+            },
+            hoverOnClear: false
+        });
+    };
+
+</script>
+<style>
+    .score-yello{
+        color: #f39a0d;
+    }
+</style>
+</html>

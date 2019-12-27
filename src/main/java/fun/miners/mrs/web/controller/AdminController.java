@@ -1,4 +1,4 @@
-package fun.miners.mrs.web.controller.admin;
+package fun.miners.mrs.web.controller;
 
 import fun.miners.mrs.model.entity.User;
 import fun.miners.mrs.repository.UserRepository;

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mrs | 注册</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{../assets/plugins/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../assets/plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/AdminLTE.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../assets/css/ionicons.min.css">
+    <link rel="stylesheet" href="../assets/css/skins/_all-skins.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/plugins/bootstrap-slider/slider.css">
+    <link rel="stylesheet" href="../assets/plugins/bootstrap-star/css/star-rating.css">
+    <script src="/assets/js/vue.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../assets/plugins/jquery/jquery.min.js"></script>
+    <script src="../assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/js/adminlte.js"></script>
+    <script src="../assets/plugins/toast/js/jquery.toast.min.js"></script>
+    <script src="../assets/plugins/bootstrap-slider/bootstrap-slider.js"></script>
+    <script src="../assets/plugins/bootstrap-star/js/star-rating.js"></script>
+    <style>
+        .form-signin {
+            width: 100%;
+            max-width: 330px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+        .form-signin .checkbox {
+            font-weight: 400;
+        }
+        .form-signin .form-control {
+            position: relative;
+            box-sizing: border-box;
+            height: auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .form-signin .form-control:focus {
+            z-index: 2;
+        }
+
+        .login-box {
+            width: 400px;
+            border: 1px solid #DCDFE6;
+            padding: 35px;
+            border-radius: 5px;
+            box-shadow: 0 0 25px #DCDFE6;
+        }
+
+        .login-logo {
+            font-size: 56px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 500;
+            color: #444;
+            text-shadow: #b2baba 0.1em 0.1em 0.2em;
+        }
+    </style>
+</head>
+<body style="background-color: #81bfde">
+<div id="app">
+    <!-- 引入header -->
+    <div th:replace="./commons/_header.html" ></div>
+    <div class="login-box" style="background-color: white;">
+        <div class="login-logo">
+            M r s
+        </div>
+        <div class="form-signin" v-show="isLogin">
+            <label class="sr-only" >用户名</label>
+            <input type="text" id="username" name="username" class="form-control" placeholder="用户名" v-model="username"><br>
+            <label class="sr-only" >密码</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="密码" v-model="password"><br>
+            <label class="sr-only">确认密码</label>
+            <input type="password" id="password2" name="password2" class="form-control" placeholder="确认密码" v-model="password2"><br>
+            <button id="btnLogin" class="btn btn-lg btn-primary btn-block" @click="login()">注册</button>
+            <a href="/login">已有账号? 点击登陆</a>
+            <div class="" v-show="msg" style="color: red">
+                {{msg}}
+            </div>
+        </div>
+        <a href="/" v-show="!isLogin">您已登陆, 点击链接前往首页! </a>
+    </div>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            user: null,
+            isLogin: true,
+            username: '',
+            password: '',
+            password2:'',
+            msg: ''
+        },
+        methods:{
+            /**
+             * 登陆
+             * @constructor
+             */
+            login() {
+                let that = this
+                if (that.password == that.password2) {
+                    let user = {
+                        "username": that.username,
+                        "password": that.password
+                    }
+                    $.ajax({
+                        //请求方式
+                        type:'POST',
+                        //发送请求的地址
+                        url:'/api/user/register',
+                        contentType : "application/json;charsetset=UTF-8",
+                        //服务器返回的数据类型
+                        dataType:'json',
+                        // contentType : 'application/json',
+                        //发送到服务器的数据，对象必须为key/value的格式，jquery会自动转换为字符串格式
+                        data: JSON.stringify(user),
+                        success:function(data){
+                            //请求成功函数内容
+                            if(data.code==200){
+                                that.user = data.result
+                                localStorage.setItem("user", that.user.id)
+                                that.msg = data.msg
+                                // location.reload()
+                                location.href='/'
+                            }else {
+                                that.msg = data.msg
+                            }
+                        },
+                        error:function(){
+                            //请求失败函数内容
+                            that.msg = '请输入相关内容!'
+                        }
+                    });
+                } else {
+                    that.msg = "两次密码不正确"
+                    that.password2 = ''
+                }
+
+            },
+        },
+        created:function(){
+            // 判断本地浏览器中用户是否存在, 存在即登陆了
+            if (localStorage.getItem("user")){
+                this.user = localStorage.getItem("user")
+                this.isLogin = false
+                location.href='/'
+            } else {
+                this.user = null
+                this.isLogin = true
+            }
+        }
+    })
+</script>
+</html>

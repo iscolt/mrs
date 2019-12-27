@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mrs | 电影推荐</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{../assets/plugins/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../assets/plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/AdminLTE.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../assets/css/ionicons.min.css">
+    <link rel="stylesheet" href="../assets/css/skins/_all-skins.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/plugins/bootstrap-slider/slider.css">
+    <link rel="stylesheet" href="../assets/plugins/bootstrap-star/css/star-rating.css">
+    <script src="/assets/js/vue.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../assets/plugins/jquery/jquery.min.js"></script>
+    <script src="../assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/js/adminlte.js"></script>
+    <script src="../assets/plugins/toast/js/jquery.toast.min.js"></script>
+    <script src="../assets/plugins/bootstrap-slider/bootstrap-slider.js"></script>
+    <script src="../assets/plugins/bootstrap-star/js/star-rating.js"></script>
+</head>
+<body style="background-color: #81bfde">
+<div id="app">
+    <!-- 引入header -->
+    <div th:replace="./commons/_header.html" ></div>
+    <div>
+        <div class="movie row">
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="box box-solid">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">电影排行 <font style="font-size: 2px;">{{msg}}</font></h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="col-md-2">
+                            <div class="list-group" style="flex: 1; border-right: 1px #b8c7ce solid">
+                                <li href="#" class="list-group-item " style=" border: 0;">
+                                    <strong>分类</strong>
+                                </li>
+                                <a class="list-group-item" style=" border: 0;" @click="getAll">全部 </a>
+                                <a v-for="c in cList" class="list-group-item" style=" border: 0;" @click="getMovieByCate(c.id)" onclick="star()">{{c.value}}</a>
+                            </div>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="media" v-for="m in nMList">
+                                <div class="media-left">
+                                    <a :href="'/detail?id='+m.id">
+                                        <img class="media-object" :src="m.icon" width="112px">
+                                    </a>
+                                </div>
+                                <div class="media-body">
+                                    <h4 class="media-heading"><a :href="'/detail?id='+m.id">{{m.name}}</a></h4>
+                                    {{m.starring}}<br><br>
+                                    {{m.introduction}}<br><br>
+                                    <div style="display: flex;flex-direction: row;margin: 0 auto;">
+                                        评分:
+                                        <input :id="m.id" class="star" readonly :value="m.score" type="hidden" title=""/><label class="score-yello"> {{m.score}}&nbsp;</label>
+                                        <span> ({{m.sCount}}人评价)</span>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            mList:[],
+            cList:[],
+            nMList:[],
+            list:[],
+            msg: '',
+            user: ''
+        },
+        methods:{
+            /**
+             * 获取所有电影
+             * @constructor
+             */
+            getMovieAll(){
+                //this 的指向问题
+                let scope=this
+                scope.nMList = []
+                scope.mList = []
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/movie/order',
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    async: false,
+                    success:function(data){
+                        //请求成功函数内容
+                        scope.mList=data.result
+                        for (let i=0; i<data.result.length;i++) {
+                            // console.log(data.result)
+                            scope.scoreCount(data.result[i])
+                        }
+                    },
+                    error:function(jqXHR){
+                        //请求失败函数内容
+                        scope.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 获取所有分类
+             * @constructor
+             */
+            getCategoryAll(){
+                //this 的指向问题
+                let scope=this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/category',
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        scope.cList=data.result
+                    },
+                    error:function(jqXHR){
+                        //请求失败函数内容
+                        scope.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 根据分类id查电影
+             */
+            getMovieByCate(id){
+                let that = this
+                that.nMList = []
+                that.mList = []
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/movie/c/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        // console.log(data.result)
+                        // that.mList=data.result
+                        for (let i=0; i<data.result.length;i++) {
+                            // console.log(data.result)
+                            that.scoreCount(data.result[i])
+                        }
+                        // console.log(data.result+that.cate)
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 获取全部电影
+             */
+            getAll() {
+                // this.getMovieAll()
+                location.reload()
+            },
+            /**
+             * 统计电影有多少人评论
+             */
+            scoreCount(movie) {
+                let that = this
+                // console.log(movie)
+                $.ajax({
+                    //请求方式
+                    type:'POST',
+                    //发送请求的地址
+                    url:'/api/score/movie/count',
+                    contentType : "application/json;charsetset=UTF-8",
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    async: false,
+                    // contentType : 'application/json',
+                    //发送到服务器的数据，对象必须为key/value的格式，jquery会自动转换为字符串格式
+                    data: JSON.stringify(movie),
+                    success:function(data){
+                        //请求成功函数内容
+                        if(data.code==200){
+                            movie.sCount = data.result
+                            that.nMList.push(movie)
+                            // console.log(movie.sCount)
+                        }else {
+                            that.msg = data.msg
+                        }
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '系统内部错误!'
+                    }
+                });
+            },
+            /**
+             * 注销
+             */
+            logout(){
+                // alert("确定注销吗?")
+                var sure = window.confirm("确定注销吗?")
+                if (sure) {
+                    localStorage.clear()
+                }
+            },
+            /**
+             * 根据id查用户详细信息
+             * @constructor
+             */
+            getUserById(id) {
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/user/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        that.user=data.result
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+        },
+        created:function(){
+            this.getMovieAll()
+            this.getCategoryAll()
+            this.getUserById(localStorage.getItem("user"))
+        }
+    })
+</script>
+<script>
+    $(function () {
+        /* BOOTSTRAP SLIDER */
+        $('.slider').slider()
+    })
+    jQuery(document).ready(function () {
+        star();
+    });
+    //参数n为休眠时间，单位为毫秒:
+    function sleep(n) {
+        var start = new Date().getTime();
+        //  console.log('休眠前：' + start);
+        while (true) {
+            if (new Date().getTime() - start > n) {
+                break;
+            }
+        }
+        // console.log('休眠后：' + new Date().getTime());
+    }
+    async function star() {
+        var $inp = $('.star');
+        $inp.rating({
+            min: 0,
+            max: 10,
+            step: 0.1,
+            size: '2',
+            showClear: false,
+            starCaptions: function (val) {
+                if (val < 6) {
+                    return val;
+                } else {
+                    return val;
+                }
+            },
+            starCaptionClasses: function (val) {
+                if (val < 6) {
+                    return 'hidden';
+                } else {
+                    return 'hidden';
+                }
+            },
+            hoverOnClear: false
+        });
+    };
+
+</script>
+<style>
+    .score-yello{
+        color: #f39a0d;
+    }
+</style>
+</html>

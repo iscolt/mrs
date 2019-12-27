@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="cn" xmlns:th="http://www.thymeleaf.org" xmlns="">
+<head>
+    <title>管理 | 分类管理</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{../assets/plugins/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="../assets/plugins/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../assets/css/AdminLTE.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../assets/css/ionicons.min.css">
+    <link rel="stylesheet" href="../assets/css/skins/_all-skins.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <script src="/assets/js/vue.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="../assets/plugins/jquery/jquery.min.js"></script>
+    <script src="../assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/js/adminlte.js"></script>
+    <script src="../assets/plugins/toast/js/jquery.toast.min.js"></script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<div id="app">
+    <div class="wrapper">
+        <!-- 引入header -->
+        <div th:replace="admin/commons/_header.html"/>
+        <!-- 引入sidebar -->
+        <div th:replace="admin/commons/_sidebar.html"/>
+        <!-- 页面内容 -->
+        <div class="content-wrapper">
+
+
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+                <h1>
+                    分类管理
+                </h1>
+                <ol class="breadcrumb">
+                    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+                    <li class="active">分类管理</li>
+                </ol>
+            </section>
+
+            <!--    操作弹窗, 默认隐藏   -->
+            <div class="alert alert-success alert-dismissible" style="margin: 20px;" v-show="msg">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                {{msg}}
+            </div>
+            <!-- Main content -->
+            <section class="content">
+                <div class="col-md-4">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">添加分类 <font style="font-size: 12px;color: #f39a0d">输入可进行修改!</font></h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body table-responsive no-padding">
+                            <div class="form-group">
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" v-model="cValue" placeholder="输入分类信息">
+                                </div>
+                                <button type="button" class="col-sm-1 control-label btn btn-primary btn-sm" @click="updateCate(0,cValue)">
+                                    保存
+                                </button>
+                            </div>
+                        </div>
+                        <hr>
+                        <!-- /.box-body -->
+                    </div>
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">分类列表
+                                <button type="button" class="btn btn-default btn-xs" @click="reload">重置</button>
+                                <font style="font-size: 12px;color: #00c0ef;">{{cMsg}}</font></h3>
+                            <div class="box-tools">
+                                <div class="input-group input-group-sm" style="width: 150px;">
+                                    <input type="text" name="table_search" class="form-control pull-left" placeholder="Search">
+
+                                    <div class="input-group-btn">
+                                        <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>分类</th>
+                                    <th>电影</th>
+                                    <th>操作</th>
+                                </tr>
+                                <tr v-for="(item,index) in cList" :key="index">
+                                    <td>{{item.id}}</td>
+                                    <td>
+                                        <input type="text" class="form-control" v-model="item.value" style="height: 80%">
+                                    </td>
+                                    <td><button class="btn btn-block btn-sm" @click="getMovieByCate(item.id, item.value)">查看</button></td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm" @click="updateCate(item.id, item.value)">
+                                            保存
+                                        </button>
+                                        <button type="button" @click="deleteCateB(item.id)" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#delete-category">
+                                            删除
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="box">
+                        <div class="box-header">
+                            <h3 class="box-title">电影列表 <strong><font style="font-size: 12px;color: #449d44">{{value}}</font></strong></h3>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>电影</th>
+                                    <th>导演</th>
+                                    <th>分类</th>
+                                    <th>时长</th>
+                                    <th>评分</th>
+                                    <th>操作</th>
+                                </tr>
+                                <tr v-for="(item,index) in list" :key="index">
+                                    <td>{{item.id}}</td>
+                                    <td>{{item.name}}</td>
+                                    <td>{{item.director}}</td>
+                                    <td>{{item.category.value}}</td>
+                                    <td>{{item.length}}</td>
+                                    <td>{{item.score}}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-default btn-xs" data-toggle="modal" data-target="#modal-default" @click="getMovieById(item.id)">
+                                            查看
+                                        </button>
+                                        <button type="button" @click="deleteB(item.id)" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#modal-danger">
+                                            删除
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                </div>
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- 引入footer -->
+        <div th:replace="admin/commons/_footer.html"></div>
+        <div class="modal fade" id="modal-default">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">{{movie.name}} | <font style="font-size: 12px;color: #f39a0d">输入可进行修改!</font></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-success alert-dismissible" style="margin: 20px;" v-show="mMsg">
+                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                            {{mMsg}} <font style="font-size: 12px;color: #f39a0d">请点击返回按钮!</font>
+                        </div>
+                        <div class="form-horizontal">
+                            <div class="box-body">
+                                <div style="display: flex;">
+                                    <div class="icon" style="flex: 2;margin-top: 10px;">
+                                        <image :src="movie.icon" style="width: 88%;height: auto;max-height: 100%;max-width: 100%"></image>
+                                        <input type="file" id="exampleInputFile" style="width: 90%;margin-top: 2px">
+                                    </div>
+
+                                    <div class="info" style="flex: 4">
+                                        <div class="form-group">
+                                            <label for="score" class="col-sm-2 control-label">评分: </label>
+
+                                            <div class="col-sm-10">
+                                                <input type="email" disabled class="form-control" id="score" v-model="movie.score">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="name" class="col-sm-2 control-label">导演: </label>
+
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="name" v-model="movie.director">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="screenwriter" class="col-sm-2 control-label">编剧: </label>
+
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="screenwriter" v-model="movie.screenwriter">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="starring" class="col-sm-2 control-label">主演: </label>
+
+                                            <div class="col-sm-10">
+                                                <input type="text" class="form-control" id="starring" v-model="movie.starring">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">类型: </label>
+                                            <div class="col-sm-10">
+                                                <select class="form-control" v-model="ProductActive" @change="changeProduct($event)">
+                                                    <option v-for="(item,index) in cList" :key="index" :value='item.id'>{{item.value}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="language" class="col-sm-2 control-label">语言: </label>
+
+                                            <div class="col-sm-10">
+                                                <input type="email" class="form-control" id="language" v-model="movie.language">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="length" class="col-sm-2 control-label">时长: </label>
+
+                                            <div class="col-sm-10">
+                                                <input type="email" class="form-control" id="length" v-model="movie.length">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="country" class="col-sm-2 control-label">制片地区: </label>
+
+                                    <div class="col-sm-10">
+                                        <input type="email" class="form-control" id="country" v-model="movie.country">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="firstTime" class="col-sm-2 control-label">上映日期: </label>
+
+                                    <div class="col-sm-10">
+                                        <input type="email" class="form-control" id="firstTime" v-model="movie.firstTime">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="introduction" class="col-sm-2 control-label">简介: </label>
+
+                                    <div class="col-sm-10">
+                                        <textarea style="height: 88px" class="form-control" id="introduction" v-model="movie.introduction"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" @click="XmMsg()">返回</button>
+                        <button type="button" class="btn btn-primary" @click="updateMovie">修改</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <div class="modal modal-danger fade" id="modal-danger">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">警告!</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>确定删除电影 [{{movie.name}}] 吗?&hellip;</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-outline" data-dismiss="modal" @click="deleteUser(movie.id)">确定</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <div class="modal modal-danger fade" id="delete-category">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">警告!</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>确定分类 [{{cate.value}}] 吗?&hellip;</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-outline" data-dismiss="modal" @click="deleteCategory(cate.id)">确定</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            list:[],
+            msg: '',
+            mMsg:'',
+            cMsg:'',
+            movie:'',
+            category:'', // 电影列表用
+            cList:[],
+            ProductActive: '',
+            cate:'', // 分类列表用
+            cValue:'未命名', // 分类
+            value: '全部'
+        },
+        methods:{
+            /**
+             * 获取所有电影
+             * @constructor
+             */
+            getMovieAll(){
+                //this 的指向问题
+                let scope=this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/movie',
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        scope.list=data.result
+                        scope.msg = data.msg
+                    },
+                    error:function(jqXHR){
+                        //请求失败函数内容
+                        scope.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 获取所有分类
+             * @constructor
+             */
+            getCategoryAll(){
+                //this 的指向问题
+                let scope=this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/category',
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        scope.cList=data.result
+                        scope.msg = data.msg
+                    },
+                    error:function(jqXHR){
+                        //请求失败函数内容
+                        scope.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 选择电影分类
+             */
+            changeProduct(event){
+                this.ProductActive = event.target.value; //获取option对应的value值
+                this.category.id = this.ProductActive
+                // console.log("你选中了",this.ProductActive)
+            },
+            /**
+             * 根据id查电影详细信息
+             * @constructor
+             */
+            getMovieById(id) {
+                let that = this
+                that.getCategoryAll()
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/movie/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        that.movie=data.result
+                        that.category=data.result.category
+                        that.ProductActive = data.result.category.id
+                        // console.log(data.result+that.user)
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 修改电影
+             * @constructor
+             */
+            updateMovie() {
+                let that = this
+                that.movie.category = that.category
+                // console.log(that.user)
+                $.ajax({
+                    //请求方式
+                    type:'POST',
+                    //发送请求的地址
+                    url:'/api/movie/save',
+                    contentType : "application/json;charsetset=UTF-8",
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    // contentType : 'application/json',
+                    //发送到服务器的数据，对象必须为key/value的格式，jquery会自动转换为字符串格式
+                    data: JSON.stringify(that.movie),
+                    success:function(data){
+                        //请求成功函数内容
+                        if(data.code==200){
+                            that.movie = data.result
+                            that.mMsg = data.msg
+                            that.getMovieAll()
+                            // console.log(data)
+                        }else {
+                            that.mMsg = data.msg
+                        }
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 修改/保存电影
+             * @constructor
+             */
+            updateCate(id, value) {
+                // console.log(id)
+                let that = this
+                let category = {
+                    "id": id,
+                    "value": value
+                }
+                $.ajax({
+                    //请求方式
+                    type:'POST',
+                    //发送请求的地址
+                    url:'/api/category/save',
+                    contentType : "application/json;charsetset=UTF-8",
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    // contentType : 'application/json',
+                    //发送到服务器的数据，对象必须为key/value的格式，jquery会自动转换为字符串格式
+                    data: JSON.stringify(category),
+                    success:function(data){
+                        //请求成功函数内容
+                        if(data.code==200){
+                            that.cMsg = data.msg
+                            that.getCategoryAll()
+                            // console.log(data)
+                        }else {
+                            that.cMsg = data.msg
+                        }
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 更具id查分类
+             */
+            getCategoryById(id){
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/category/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        that.cate=data.result
+                        // console.log(data.result+that.cate)
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 根据分类id查电影
+             */
+            async getMovieByCate(id,value){
+                let that = this
+                that.value = value
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/movie/c/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        that.list=data.result
+                        // console.log(data.result+that.cate)
+                        that.msg = data.msg
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 点击电影删除按钮事件
+             */
+            deleteB(id){
+                this.getMovieById(id)
+                // console.log(id+this.movie)
+            },
+            /**
+             * 点击分类删除按钮
+             */
+            deleteCateB(id) {
+                this.getCategoryById(id)
+                // console.log(id+this.cate)
+            },
+            /**
+             * 根据id删除电影
+             * @constructor
+             */
+            deleteUser(id) {
+                // console.log(id)
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/movie/delete/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        // console.log(data.result+that.user)
+                        that.msg = data.msg
+                        that.getMovieAll()
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 根据id删除分类
+             */
+            deleteCategory(id){
+                let that = this
+                $.ajax({
+                    //请求方式
+                    type:'GET',
+                    //发送请求的地址
+                    url:'/api/category/delete/'+id,
+                    //服务器返回的数据类型
+                    dataType:'json',
+                    success:function(data){
+                        //请求成功函数内容
+                        // console.log(data.result+that.user)
+                        that.msg = data.msg
+                        that.getMovieAll()
+                        that.getCategoryAll()
+                    },
+                    error:function(){
+                        //请求失败函数内容
+                        that.msg = '加载失败'
+                    }
+                });
+            },
+            /**
+             * 将提示框内的提示内容变空
+             * @constructor
+             */
+            XmMsg(){
+                this.mMsg = ''
+            },
+            /**
+             * 分类重载
+             */
+            reload(){
+                this.value = '全部'
+                this.getCategoryAll()
+                this.getMovieAll()
+            }
+        },
+        created:function(){
+            this.getMovieAll()
+            this.getCategoryAll()
+        }
+    })
+</script>
+</html>

@@ -14,7 +14,12 @@ public class Movie {
     private Integer id;
 
     /**
-     * 导游
+     * 电影名
+     */
+    private String name;
+
+    /**
+     * 导演
      */
     @Column
     private String director;
@@ -31,7 +36,7 @@ public class Movie {
     @Column
     private String starring;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "categoryId")
     private Category category;
 
